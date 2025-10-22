@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height">
+    <title>Void Text</title>
+    <link rel="icon" href="logo real.jpg" type="image/png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+        
+        body {
+            background-color: #000;
+            color: #fff;
+            min-height: 100vh;
+            overflow-y: auto;
+            position: relative;
+            padding-bottom: 120px; /* Space for the footer */
+        }
+        
+        /* Matrix Rain Background */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.3;
+        }
+        
+        /* Scanlines Effect */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                transparent 50%, 
+                rgba(0, 255, 255, 0.03) 50%
+            );
+            background-size: 100% 4px;
+            z-index: 2;
+            pointer-events: none;
+        }
+        
+        /* CRT Flicker Effect */
+        @keyframes flicker {
+            0% { opacity: 0.97; }
+            50% { opacity: 1; }
+            100% { opacity: 0.98; }
+        }
+        
+        .container {
+            position: relative;
+            z-index: 3;
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 0 auto;
+            padding-top: 40px;
+            padding-bottom: 140px;
+            animation: flicker 0.1s infinite;
+        }
+        
+        .title {
+            font-size: 28px;
+            text-align: center;
+            color: #0ff;
+            text-shadow: 
+                0 0 15px #0ff,
+                0 0 25px #0ff,
+                0 0 35px #0ff;
+            margin-bottom: 20px;
+            position: relative;
+            letter-spacing: 2px;
+            font-weight: bold;
+            animation: pulse-glow 3s ease-in-out infinite;
+        }
+        
+        .mode-indicator {
+            font-size: 14px;
+            color: #f0f;
+            text-align: center;
+            margin-top: -10px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 5px #f0f;
+        }
+        
+        /* Professional Pulse Glow Animation */
+        @keyframes pulse-glow {
+            0%, 100% { 
+                text-shadow: 
+                    0 0 15px #0ff,
+                    0 0 25px #0ff,
+                    0 0 35px #0ff;
+            }
+            50% { 
+                text-shadow: 
+                    0 0 20px #0ff,
+                    0 0 30px #0ff,
+                    0 0 40px #0ff,
+                    0 0 50px #0ff;
+            }
+        }
+        
+        .login-screen, .app-screen {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #0ff;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 
+                0 0 20px rgba(0, 255, 255, 0.5),
+                inset 0 0 20px rgba(0, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+        }
+        
+        input, textarea {
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 1px solid #333;
+            color: #0ff;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 100%;
+            box-shadow: 
+                0 0 10px rgba(0, 255, 255, 0.3),
+                inset 0 0 10px rgba(0, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #0ff;
+            box-shadow: 
+                0 0 20px rgba(0, 255, 255, 0.7),
+                inset 0 0 15px rgba(0, 255, 255, 0.2);
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: none;
+            font-family: 'Courier New', monospace;
+        }
+        
+        button {
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 1px solid #f0f;
+            color: #f0f;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 
+                0 0 10px rgba(255, 0, 255, 0.3),
+                inset 0 0 10px rgba(255, 0, 255, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 0, 255, 0.4), transparent);
+            transition: left 0.5s;
+        }
+        
+        button:hover::before {
+            left: 100%;
+        }
+        
+        button:hover {
+            background-color: rgba(255, 0, 255, 0.1);
+            border-color: #f0f;
+            box-shadow: 
+                0 0 20px rgba(255, 0, 255, 0.7),
+                inset 0 0 15px rgba(255, 0, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+            box-shadow: 
+                0 0 10px rgba(255, 0, 255, 0.5),
+                inset 0 0 10px rgba(255, 0, 255, 0.3);
+        }
+        
+        .error-message {
+            color: #f00;
+            text-align: center;
+            display: none;
+            font-size: 18px;
+            text-shadow: 0 0 10px #f00;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .shake {
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+        
+        .button-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .button-container button {
+            flex: 1;
+            min-width: calc(50% - 5px);
+        }
+        
+        /* Hacking Decorations */
+        .hacking-decoration {
+            position: absolute;
+            color: #0ff;
+            font-size: 12px;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .dec1 { top: 10%; left: 5%; animation: float 10s infinite; }
+        .dec2 { top: 20%; right: 5%; animation: float 15s infinite; }
+        .dec3 { bottom: 30%; left: 10%; animation: float 12s infinite; }
+        .dec4 { bottom: 10%; right: 10%; animation: float 8s infinite; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        /* Warning Footer - Enhanced */
+        .warning-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 100%);
+            border-top: 2px solid #ff0;
+            padding: 15px 10px;
+            text-align: center;
+            z-index: 9999;
+            box-shadow: 
+                0 -5px 20px rgba(255, 255, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .warning-text {
+            color: #ff0;
+            font-size: 14px;
+            font-weight: bold;
+            text-shadow: 
+                0 0 8px #ff0,
+                0 0 12px #ff0;
+            margin-bottom: 8px;
+            animation: warning-pulse 2s ease-in-out infinite;
+            line-height: 1.4;
+        }
+        
+        .warning-subtext {
+            color: #f0f;
+            font-size: 12px;
+            opacity: 0.9;
+            text-shadow: 0 0 5px #f0f;
+        }
+        
+        @keyframes warning-pulse {
+            0%, 100% { 
+                opacity: 1; 
+                text-shadow: 
+                    0 0 8px #ff0,
+                    0 0 12px #ff0;
+            }
+            50% { 
+                opacity: 0.85; 
+                text-shadow: 
+                    0 0 12px #ff0,
+                    0 0 18px #ff0,
+                    0 0 24px #ff0;
+            }
+        }
+        
+        /* Enhanced scanline effect on footer */
+        .warning-footer::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                transparent 50%, 
+                rgba(255, 255, 0, 0.08) 50%
+            );
+            background-size: 100% 3px;
+            pointer-events: none;
+        }
+        
+        /* Border glow animation for footer */
+        @keyframes border-glow {
+            0%, 100% { border-color: #ff0; }
+            50% { border-color: #f0f; }
+        }
+        
+        .warning-footer {
+            animation: border-glow 4s ease-in-out infinite;
+        }
+        
+        /* History Modal */
+        .history-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 100;
+            overflow-y: auto;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .history-content {
+            max-width: 400px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #0ff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 
+                0 0 20px rgba(0, 255, 255, 0.5),
+                inset 0 0 20px rgba(0, 255, 255, 0.1);
+        }
+        
+        .history-title {
+            font-size: 24px;
+            color: #0ff;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px #0ff;
+        }
+        
+        .history-list {
+            max-height: 60vh;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+        
+        .history-item {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #333;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .history-type {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        .encode-type {
+            background: rgba(0, 255, 0, 0.2);
+            color: #0f0;
+        }
+        
+        .decode-type {
+            background: rgba(255, 165, 0, 0.2);
+            color: #ffa500;
+        }
+        
+        .history-input, .history-output {
+            margin-bottom: 5px;
+            font-size: 14px;
+            word-break: break-all;
+        }
+        
+        .history-label {
+            color: #f0f;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        
+        .close-history {
+            width: 100%;
+            padding: 12px;
+            background-color: rgba(255, 0, 0, 0.2);
+            border: 1px solid #f00;
+            color: #f00;
+        }
+        
+        .close-history:hover {
+            background-color: rgba(255, 0, 0, 0.3);
+            border-color: #f00;
+            box-shadow: 
+                0 0 20px rgba(255, 0, 0, 0.7),
+                inset 0 0 15px rgba(255, 0, 0, 0.2);
+        }
+        
+        .empty-history {
+            text-align: center;
+            color: #888;
+            padding: 20px;
+            font-style: italic;
+        }
+        
+        /* Clear button styling */
+        .clear-button {
+            background-color: rgba(255, 0, 0, 0.2);
+            border: 1px solid #f00;
+            color: #f00;
+        }
+        
+        .clear-button:hover {
+            background-color: rgba(255, 0, 0, 0.3);
+            border-color: #f00;
+            box-shadow: 
+                0 0 20px rgba(255, 0, 0, 0.7),
+                inset 0 0 15px rgba(255, 0, 0, 0.2);
+        }
+        
+        /* History button styling */
+        .history-button {
+            background-color: rgba(0, 165, 255, 0.2);
+            border: 1px solid #00a5ff;
+            color: #00a5ff;
+        }
+        
+        .history-button:hover {
+            background-color: rgba(0, 165, 255, 0.3);
+            border-color: #00a5ff;
+            box-shadow: 
+                0 0 20px rgba(0, 165, 255, 0.7),
+                inset 0 0 15px rgba(0, 165, 255, 0.2);
+        }
+        
+        /* Logout button styling */
+        .logout-button {
+            background-color: rgba(255, 140, 0, 0.2);
+            border: 1px solid #ff8c00;
+            color: #ff8c00;
+        }
+        
+        .logout-button:hover {
+            background-color: rgba(255, 140, 0, 0.3);
+            border-color: #ff8c00;
+            box-shadow: 
+                0 0 20px rgba(255, 140, 0, 0.7),
+                inset 0 0 15px rgba(255, 140, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- Matrix Rain Canvas -->
+    <canvas id="matrix-canvas"></canvas>
+    
+    <!-- Hacking Decorations -->
+    <div class="hacking-decoration dec1">01001101</div>
+    <div class="hacking-decoration dec2">VOID</div>
+    <div class="hacking-decoration dec3">ENCRYPT</div>
+    <div class="hacking-decoration dec4">11001011</div>
+    
+    <div class="container">
+        <div class="login-screen" id="loginScreen">
+            <h1 class="title">VOID TEXT</h1>
+            <input type="password" id="passwordInput" placeholder="ACCESS CODE" autocomplete="off">
+            <button id="loginButton">INITIALIZE</button>
+            <div class="error-message" id="errorMessage">ACCESS DENIED</div>
+        </div>
+        
+        <div class="app-screen" id="appScreen" style="display: none;">
+            <h1 class="title" id="appTitle">VOID TEXT</h1>
+            <div class="mode-indicator" id="modeIndicator"></div>
+            <textarea id="inputText" placeholder="INPUT DATA..."></textarea>
+            <div class="button-container">
+                <button id="encodeButton">ENCODE</button>
+                <button id="decodeButton">DECODE</button>
+                <button id="copyButton">COPY</button>
+                <button id="clearButton" class="clear-button">CLEAR</button>
+                <button id="historyButton" class="history-button">HISTORY</button>
+                <button id="logoutButton" class="logout-button">LOGOUT</button>
+            </div>
+            <textarea id="outputText" readonly placeholder="OUTPUT..."></textarea>
+        </div>
+    </div>
+    
+    <!-- History Modal -->
+    <div class="history-modal" id="historyModal">
+        <div class="history-content">
+            <h2 class="history-title">OPERATION HISTORY</h2>
+            <div class="history-list" id="historyList">
+                <div class="empty-history">No operations yet</div>
+            </div>
+            <button id="closeHistory" class="close-history">CLOSE</button>
+        </div>
+    </div>
+    
+    <!-- Warning Footer -->
+    <div class="warning-footer" id="warningFooter">
+        <div class="warning-text">⚠️ ACCESS RESTRICTED — This tool is for authorized users only. Unauthorized use may expose your system to security risks.</div>
+        <div class="warning-subtext">Developed by Shafu | Contact: [shafayatamin0010@gmail.com]</div>
+    </div>
+
+    <script>
+        // Matrix Rain Effect
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}";
+        const matrixArray = matrix.split("");
+        
+        const fontSize = 10;
+        const columns = canvas.width / fontSize;
+        
+        const drops = [];
+        for(let x = 0; x < columns; x++) {
+            drops[x] = 1;
+        }
+        
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#0f0';
+            ctx.font = fontSize + 'px monospace';
+            
+            for(let i = 0; i < drops.length; i++) {
+                const text = matrixArray[Math.floor(Math.random() * matrixArray.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        
+        setInterval(drawMatrix, 35);
+        
+        // SYMBOL MODE CIPHER MAP
+        const cipherMap = {
+            // English (A–Z + a–z)
+            "A":"Λж日1","B":"ψ42","C":"¥Ø3","D":"Δ9","E":"€13","F":"Ƒ77","G":"₲0","H":"♜8","I":"ɪ48","J":"ℑ64","K":"Ӝ5","L":"Ł11","M":"₥20","N":"И14","O":"Ø88","P":"₱02","Q":"Ҩ7","R":"Я90","S":"§33","T":"Ŧ6","U":"Ц12","V":"√9","W":"Ψ15","X":"Ж1","Y":"¥3","Z":"乙4",
+            "a":"Λж日1","b":"ψ42","c":"¥Ø3","d":"Δ9","e":"€13","f":"Ƒ77","g":"₲0","h":"♜8","i":"ɪ48","j":"ℑ64","k":"Ӝ5","l":"Ł11","m":"₥20","n":"И14","o":"Ø88","p":"₱02","q":"Ҩ7","r":"Я90","s":"§33","t":"Ŧ6","u":"Ц12","v":"√9","w":"Ψ15","x":"Ж1","y":"¥3","z":"乙4",
+            
+            // Bangla letters
+            "অ":"অ#1","আ":"আ!2","ই":"ই_3","ঈ":"ঈ$4","উ":"উ%5","ঊ":"ঊ^6","ঋ":"ঋ*7","এ":"এ(8","ঐ":"ঐ)9","ও":"ও+0","ঔ":"ঔ=1",
+            "ক":"x9","খ":"Ω7","গ":"ψ3","ঘ":"δ1","ঙ":"ξ5","চ":"ζ8","ছ":"φ4","জ":"λ2","ঝ":"ς7","ঞ":"η9","ট":"κ5","ঠ":"π3","ড":"ρ4","ঢ":"σ2","ণ":"τ7","ত":"θ9","থ":"υ5","দ":"χ8","ধ":"ψ2","ন":"ω6","প":"β9","ফ":"γ7","ব":"δ1","ভ":"μ3","ম":"ν5","য":"ξ2","র":"π1","ল":"σ3","শ":"τ4","ষ":"θ6","স":"υ8","হ":"φ9","ড়":"ψ4","ঢ়":"χ1","য়":"ω2","ৎ":"β6","ং":"ζ7","ঃ":"η5","ঁ":"λ3","ক্ষ":"μ1","জ্ঞ":"ν9"
+        };
+        
+        // BINARY MODE MAPS
+        const asciiBinaryMap = {
+            "A":"01000001","B":"01000010","C":"01000011","D":"01000100","E":"01000101","F":"01000110",
+            "G":"01000111","H":"01001000","I":"01001001","J":"01001010","K":"01001011","L":"01001100",
+            "M":"01001101","N":"01001110","O":"01001111","P":"01010000","Q":"01010001","R":"01010010",
+            "S":"01010011","T":"01010100","U":"01010101","V":"01010110","W":"01010111","X":"01011000",
+            "Y":"01011001","Z":"01011010",
+            "a":"01100001","b":"01100010","c":"01100011","d":"01100100","e":"01100101","f":"01100110",
+            "g":"01100111","h":"01101000","i":"01101001","j":"01101010","k":"01101011","l":"01101100",
+            "m":"01101101","n":"01101110","o":"01101111","p":"01110000","q":"01110001","r":"01110010",
+            "s":"01110011","t":"01110100","u":"01110101","v":"01110110","w":"01110111","x":"01111000",
+            "y":"01111001","z":"01111010"
+        };
+        
+        const banglaBinaryMap = {
+            "অ":"[11100000][10100110][10000101]",
+            "আ":"[11100000][10100110][10000110]",
+            "ই":"[11100000][10100110][10000111]",
+            "ঈ":"[11100000][10100110][10001000]",
+            "উ":"[11100000][10100110][10001001]",
+            "ঊ":"[11100000][10100110][10001010]",
+            "ঋ":"[11100000][10100110][10001011]",
+            "এ":"[11100000][10100110][10001100]",
+            "ঐ":"[11100000][10100110][10001101]",
+            "ও":"[11100000][10100110][10001110]",
+            "ঔ":"[11100000][10100110][10001111]",
+            "ক":"[11100000][10100110][10010101]",
+            "খ":"[11100000][10100110][10010110]",
+            "গ":"[11100000][10100110][10010111]",
+            "ঘ":"[11100000][10100110][10011000]",
+            "ঙ":"[11100000][10100110][10011001]",
+            "চ":"[11100000][10100110][10011010]",
+            "ছ":"[11100000][10100110][10011011]",
+            "জ":"[11100000][10100110][10011100]",
+            "ঝ":"[11100000][10100110][10011101]",
+            "ঞ":"[11100000][10100110][10011110]",
+            "ট":"[11100000][10100111][10001001]",
+            "ঠ":"[11100000][10100111][10001010]",
+            "ড":"[11100000][10100111][10001011]",
+            "ঢ":"[11100000][10100111][10001100]",
+            "ণ":"[11100000][10100111][10001101]",
+            "ত":"[11100000][10100111][10001110]",
+            "থ":"[11100000][10100111][10001111]",
+            "দ":"[11100000][10100111][10010000]",
+            "ধ":"[11100000][10100111][10010001]",
+            "ন":"[11100000][10100111][10010010]",
+            "প":"[11100000][10100111][10010011]",
+            "ফ":"[11100000][10100111][10010100]",
+            "ব":"[11100000][10100111][10010101]",
+            "ভ":"[11100000][10100111][10010110]",
+            "ম":"[11100000][10100111][10010111]",
+            "য":"[11100000][10100111][10011000]",
+            "র":"[11100000][10100111][10011001]",
+            "ল":"[11100000][10100111][10011010]",
+            "শ":"[11100000][10100111][10011011]",
+            "ষ":"[11100000][10100111][10011100]",
+            "স":"[11100000][10100111][10011101]",
+            "হ":"[11100000][10100111][10011110]",
+            "ড়":"[11100000][10100111][10011111]",
+            "ঢ়":"[11100000][10101000][10000000]",
+            "য়":"[11100000][10101000][10000001]",
+            "ৎ":"[11100000][10101000][10000010]",
+            "ং":"[11100000][10101000][10000011]",
+            "ঃ":"[11100000][10101000][10000100]",
+            "ঁ":"[11100000][10101000][10000101]",
+            "ক্ষ":"[11100000][10101001][10000001][11100000][10100110][10010101]",
+            "জ্ঞ":"[11100000][10101001][10000010][11100000][10100110][10011100]"
+        };
+        
+        // Create reverse maps
+        const reverseCipherMap = {};
+        for (const key in cipherMap) {
+            reverseCipherMap[cipherMap[key]] = key;
+        }
+        
+        const reverseAsciiBinaryMap = {};
+        for (const key in asciiBinaryMap) {
+            reverseAsciiBinaryMap[asciiBinaryMap[key]] = key;
+        }
+        
+        const reverseBanglaBinaryMap = {};
+        for (const key in banglaBinaryMap) {
+            reverseBanglaBinaryMap[banglaBinaryMap[key]] = key;
+        }
+        
+        // Combine binary reverse maps
+        const reverseBinaryMap = {
+            ...reverseAsciiBinaryMap,
+            ...reverseBanglaBinaryMap
+        };
+        
+        // Create sorted patterns for binary decoding
+        const sortedBinaryPatterns = Object.keys(reverseBinaryMap).sort((a, b) => b.length - a.length);
+        
+        // History array
+        let operationHistory = [];
+        
+        // Current mode
+        let currentMode = '';
+        
+        // DOM elements
+        const loginScreen = document.getElementById('loginScreen');
+        const appScreen = document.getElementById('appScreen');
+        const appTitle = document.getElementById('appTitle');
+        const modeIndicator = document.getElementById('modeIndicator');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginButton = document.getElementById('loginButton');
+        const errorMessage = document.getElementById('errorMessage');
+        const inputText = document.getElementById('inputText');
+        const outputText = document.getElementById('outputText');
+        const encodeButton = document.getElementById('encodeButton');
+        const decodeButton = document.getElementById('decodeButton');
+        const copyButton = document.getElementById('copyButton');
+        const clearButton = document.getElementById('clearButton');
+        const historyButton = document.getElementById('historyButton');
+        const logoutButton = document.getElementById('logoutButton');
+        const historyModal = document.getElementById('historyModal');
+        const historyList = document.getElementById('historyList');
+        const closeHistory = document.getElementById('closeHistory');
+        const warningFooter = document.getElementById('warningFooter');
+        
+        // Store the original viewport height
+        const originalViewportHeight = window.innerHeight;
+        let isKeyboardOpen = false;
+        
+        // Function to handle viewport resize (keyboard open/close)
+        function handleViewportResize() {
+            const currentViewportHeight = window.innerHeight;
+            const viewportHeightDifference = originalViewportHeight - currentViewportHeight;
+            
+            // If viewport height is significantly reduced, keyboard is likely open
+            if (viewportHeightDifference > 150 && !isKeyboardOpen) {
+                // Keyboard is opening
+                isKeyboardOpen = true;
+                // Hide the footer when keyboard is open
+                warningFooter.style.display = 'none';
+            } else if (viewportHeightDifference < 150 && isKeyboardOpen) {
+                // Keyboard is closing
+                isKeyboardOpen = false;
+                // Show the footer when keyboard is closed
+                warningFooter.style.display = 'block';
+            }
+        }
+        
+        // Listen for resize events
+        window.addEventListener('resize', handleViewportResize);
+        
+        // Listen for input focus/blur events as additional keyboard detection
+        const allInputs = document.querySelectorAll('input, textarea');
+        allInputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                // Small delay to ensure keyboard has time to open
+                setTimeout(() => {
+                    if (window.innerHeight < originalViewportHeight * 0.8) {
+                        isKeyboardOpen = true;
+                        warningFooter.style.display = 'none';
+                    }
+                }, 300);
+            });
+            
+            input.addEventListener('blur', () => {
+                // Small delay to ensure keyboard has time to close
+                setTimeout(() => {
+                    isKeyboardOpen = false;
+                    warningFooter.style.display = 'block';
+                }, 300);
+            });
+        });
+        
+        // Login functionality
+        loginButton.addEventListener('click', function() {
+            const password = passwordInput.value;
+            console.log("Password entered:", password); // Debug log
+            
+            if (password === "SFT00125") {
+                console.log("Access granted - Symbol mode"); // Debug log
+                currentMode = 'symbol';
+                appTitle.textContent = 'VOID TEXT - MAIN MODE';
+                modeIndicator.textContent = 'SHAFU INTERPRETER ACTIVE';
+                modeIndicator.style.color = '#0ff';
+                loginScreen.style.display = 'none';
+                appScreen.style.display = 'flex';
+                errorMessage.style.display = 'none';
+            } else if (password === "12345") {
+                console.log("Access granted - Binary mode"); // Debug log
+                currentMode = 'binary';
+                appTitle.textContent = 'VOID TEXT - SPECIAL MODE';
+                modeIndicator.textContent = 'BINARY INTERPRETER ACTIVE';
+                modeIndicator.style.color = '#ffa500';
+                loginScreen.style.display = 'none';
+                appScreen.style.display = 'flex';
+                errorMessage.style.display = 'none';
+            } else {
+                console.log("Access denied"); // Debug log
+                errorMessage.style.display = 'block';
+                loginScreen.classList.add('shake');
+                setTimeout(() => {
+                    loginScreen.classList.remove('shake');
+                }, 500);
+            }
+        });
+        
+        // Logout functionality
+        logoutButton.addEventListener('click', function() {
+            // Reset everything
+            currentMode = '';
+            appScreen.style.display = 'none';
+            loginScreen.style.display = 'flex';
+            passwordInput.value = '';
+            inputText.value = '';
+            outputText.value = '';
+            errorMessage.style.display = 'none';
+            appTitle.textContent = 'VOID TEXT';
+            modeIndicator.textContent = '';
+        });
+        
+        // Enter key support for login
+        passwordInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                loginButton.click();
+            }
+        });
+        
+        // Add operation to history
+        function addToHistory(input, output, type, mode) {
+            const timestamp = new Date().toLocaleTimeString();
+            operationHistory.unshift({
+                input: input,
+                output: output,
+                type: type,
+                mode: mode,
+                timestamp: timestamp
+            });
+            
+            // Keep only the last 20 operations
+            if (operationHistory.length > 20) {
+                operationHistory = operationHistory.slice(0, 20);
+            }
+        }
+        
+        // SYMBOL MODE FUNCTIONS
+        function encodeSymbol() {
+            const input = inputText.value;
+            if (!input) return;
+            
+            let result = '';
+            
+            for (let i = 0; i < input.length; i++) {
+                const char = input[i];
+                if (cipherMap[char]) {
+                    result += cipherMap[char];
+                } else {
+                    result += char;
+                }
+            }
+            
+            outputText.value = result;
+            addToHistory(input, result, 'ENCODE', 'MAIN');
+        }
+        
+        function decodeSymbol() {
+            const input = inputText.value;
+            if (!input) return;
+            
+            let result = '';
+            let i = 0;
+            
+            while (i < input.length) {
+                let found = false;
+                
+                // Check for multi-character matches first
+                for (let len = 5; len >= 1; len--) {
+                    const substr = input.substr(i, len);
+                    if (reverseCipherMap[substr]) {
+                        result += reverseCipherMap[substr];
+                        i += len;
+                        found = true;
+                        break;
+                    }
+                }
+                
+                if (!found) {
+                    result += input[i];
+                    i++;
+                }
+            }
+            
+            outputText.value = result;
+            addToHistory(input, result, 'DECODE', 'MAIN');
+        }
+        
+        // BINARY MODE FUNCTIONS
+        function encodeBinary() {
+            const input = inputText.value;
+            if (!input) return;
+            
+            let result = '';
+            
+            for (let i = 0; i < input.length; i++) {
+                const char = input[i];
+                if (asciiBinaryMap[char]) {
+                    result += asciiBinaryMap[char];
+                } else if (banglaBinaryMap[char]) {
+                    result += banglaBinaryMap[char];
+                } else {
+                    result += char;
+                }
+            }
+            
+            outputText.value = result;
+            addToHistory(input, result, 'ENCODE', 'SPECIAL');
+        }
+        
+        function decodeBinary() {
+            const input = inputText.value;
+            if (!input) return;
+            
+            let result = '';
+            let i = 0;
+            
+            while (i < input.length) {
+                let found = false;
+                
+                // Try to match the longest pattern first
+                for (const pattern of sortedBinaryPatterns) {
+                    if (input.startsWith(pattern, i)) {
+                        result += reverseBinaryMap[pattern];
+                        i += pattern.length;
+                        found = true;
+                        break;
+                    }
+                }
+                
+                if (!found) {
+                    result += input[i];
+                    i++;
+                }
+            }
+            
+            outputText.value = result;
+            addToHistory(input, result, 'DECODE', 'SPECIAL');
+        }
+        
+        // Copy result function
+        function copyResult() {
+            outputText.select();
+            document.execCommand('copy');
+            
+            // Visual feedback
+            const originalText = copyButton.textContent;
+            copyButton.textContent = 'COPIED!';
+            copyButton.style.color = '#0ff';
+            
+            setTimeout(() => {
+                copyButton.textContent = originalText;
+                copyButton.style.color = '#f0f';
+            }, 1000);
+        }
+        
+        // Clear function
+        function clearText() {
+            inputText.value = '';
+            outputText.value = '';
+        }
+        
+        // Show history function
+        function showHistory() {
+            historyModal.style.display = 'block';
+            
+            // Clear previous history display
+            historyList.innerHTML = '';
+            
+            if (operationHistory.length === 0) {
+                historyList.innerHTML = '<div class="empty-history">No operations yet</div>';
+                return;
+            }
+            
+            // Add each history item
+            operationHistory.forEach((operation, index) => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                
+                const typeClass = operation.type === 'ENCODE' ? 'encode-type' : 'decode-type';
+                const modeColor = operation.mode === 'MAIN' ? '#0ff' : '#ffa500';
+                
+                historyItem.innerHTML = `
+                    <div class="history-type ${typeClass}">${operation.type}</div>
+                    <div style="color: ${modeColor}; font-size: 12px; position: absolute; top: 5px; left: 5px;">
+                        ${operation.mode}
+                    </div>
+                    <div class="history-input">
+                        <span class="history-label">INPUT:</span> ${operation.input}
+                    </div>
+                    <div class="history-output">
+                        <span class="history-label">OUTPUT:</span> ${operation.output}
+                    </div>
+                    <div style="font-size: 12px; color: #888; text-align: right;">
+                        ${operation.timestamp}
+                    </div>
+                `;
+                
+                historyList.appendChild(historyItem);
+            });
+        }
+        
+        // Close history function
+        function closeHistoryModal() {
+            historyModal.style.display = 'none';
+        }
+        
+        // Button event listeners
+        encodeButton.addEventListener('click', function() {
+            if (currentMode === 'symbol') {
+                encodeSymbol();
+            } else if (currentMode === 'binary') {
+                encodeBinary();
+            }
+        });
+        
+        decodeButton.addEventListener('click', function() {
+            if (currentMode === 'symbol') {
+                decodeSymbol();
+            } else if (currentMode === 'binary') {
+                decodeBinary();
+            }
+        });
+        
+        copyButton.addEventListener('click', copyResult);
+        clearButton.addEventListener('click', clearText);
+        historyButton.addEventListener('click', showHistory);
+        closeHistory.addEventListener('click', closeHistoryModal);
+        
+        // Close history modal when clicking outside
+        historyModal.addEventListener('click', function(e) {
+            if (e.target === historyModal) {
+                closeHistoryModal();
+            }
+        });
+        
+        // Window resize handler for matrix canvas
+        window.addEventListener('resize', function() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
